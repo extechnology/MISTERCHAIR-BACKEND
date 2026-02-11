@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -207,8 +209,8 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-USER_MODEL = 'ApplicationServices.User'
-AUTH_USER_MODEL = 'ApplicationServices.User'
+# USER_MODEL = 'ApplicationServices.User'
+# AUTH_USER_MODEL = 'ApplicationServices.User'
 
 AUTHENTICATION_BACKENDS = [
     # "Application.AuthenticationServices.auth_backend.UsernameEmailPhoneBackend",  # ✅ our custom backend

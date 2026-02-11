@@ -1,4 +1,3 @@
-from MisterChairProject.urls import urlpatterns
 from django.urls import path,include
 
 urlpatterns = [
