@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'grappelli',
+    'nested_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +45,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'ApplicationServices',
+    'tinymce',
+    'django_filters',
+
 ]
 
 MIDDLEWARE = [
@@ -209,11 +214,11 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-# USER_MODEL = 'ApplicationServices.User'
-# AUTH_USER_MODEL = 'ApplicationServices.User'
+USER_MODEL = 'ApplicationServices.User'
+AUTH_USER_MODEL = 'ApplicationServices.User'
 
 AUTHENTICATION_BACKENDS = [
-    # "Application.AuthenticationServices.auth_backend.UsernameEmailPhoneBackend",  # ✅ our custom backend
+    "ApplicationServices.AuthServices.auth_backend.UsernameEmailPhoneBackend",  # ✅ our custom backend
     "django.contrib.auth.backends.ModelBackend",    # keep default for admin
 ]
 
@@ -229,3 +234,4 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 GOOGLE_CLIENT_ID = 'your_google_client_id'
 GOOGLE_CLIENT_SECRET = 'your_google_client_secret'
+
