@@ -23,6 +23,8 @@ class ProductFilter(filters.FilterSet):
         field_name="chair_colors__is_available"
     )
 
+    min_price  = CharFilter(field_name="chair_colors__price", lookup_expr="gte")
+    max_price  = CharFilter(field_name="chair_colors__price", lookup_expr="lte")
     class Meta:
         model = Chair
         fields = [
@@ -32,4 +34,6 @@ class ProductFilter(filters.FilterSet):
             "capacity",
             "color",
             "is_available",
+            'min_price',
+            'max_price'
         ]

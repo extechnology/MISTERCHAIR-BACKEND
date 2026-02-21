@@ -22,17 +22,21 @@ from .product_filters import ProductFilter
 class ProductFilterSideBarAPIView(APIView):
     def get(self, request):
         filter_bar = {
-            "category": list(Category.objects.values_list("category_name", flat=True)),
-            "height_stability":list(Chair.objects.values_list("height_stability", flat=True)),
-            "back_support":list(Chair.objects.values_list("back_support", flat=True)),
-            "capacity":list(Chair.objects.values_list("capacity", flat=True)),
+            "category": list(Category.objects.values_list("category_name", flat=True).distinct()),
+            "height_stability":list(Chair.objects.values_list("height_stability", flat=True).distinct()),
+            "back_support":list(Chair.objects.values_list("back_support", flat=True).distinct()),
+            "capacity":list(Chair.objects.values_list("capacity", flat=True).distinct()),
             "color": [
-            {
-                "name": c.color_name,
-                "code": list(filter(None, [c.color_code, c.color_code_2]))
-            }
-            for c in ChairColors.objects.all()
-        ],
+                {
+                    "name": c["color_name"],
+                    "code": list(
+                        filter(None, [c["color_code"], c["color_code_2"]])
+                    )
+                }
+                for c in ChairColors.objects.values(
+                    "color_name", "color_code", "color_code_2"
+                ).distinct()
+            ],
         }
         return Response(filter_bar, status=status.HTTP_200_OK)
 
@@ -43,16 +47,25 @@ class ProductFilterAPIView(APIView):
         queryset = Chair.objects.all()
         filterset = ProductFilter(request.GET, queryset=queryset)
 
-        serializer = ChairSerializer(
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(
             filterset.qs.distinct(),
+            request
+        )
+
+        if page is None:
+            serializer = ChairSerializer(
+                filterset.qs.distinct(),
+                many=True,
+                context={"request": request}
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        serializer = ChairSerializer(
+            page,
             many=True,
             context={"request": request}
         )
-        paginator = self.pagination_class()
-        page = paginator.paginate_queryset(serializer.data, request)
-
-        if page is None:
-            return Response([], status=status.HTTP_200_OK)
 
         return paginator.get_paginated_response(serializer.data)
 
@@ -60,4 +73,19 @@ class ChairDetailAPIView(APIView):
     def get(self, request, chair_id):
         chair = Chair.objects.get(unique_id=chair_id)
         serializer = ChairSerializer(chair, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RelatedProductAPIView(APIView):
+    def get(self, request, chair_id):
+        chair = Chair.objects.get(unique_id=chair_id)
+        related_products = Chair.objects.filter(category=chair.category).exclude(unique_id=chair_id)
+        serializer = ChairSerializer(related_products, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BestSellerAPIView(APIView):
+    def get(self, request):
+        best_seller = Chair.objects.filter(special_tag='Bestseller').order_by('-created_at')[:6]
+        serializer = ChairSerializer(best_seller, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)

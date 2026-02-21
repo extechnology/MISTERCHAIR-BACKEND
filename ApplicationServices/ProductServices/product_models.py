@@ -19,8 +19,17 @@ class Chair(models.Model):
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    SPECIAL_TAGS = (
+        ('New', 'New'),
+        ('Bestseller', 'Bestseller'),
+        ('Trending', 'Trending'),
+        ('Limited', 'Limited')
+    )
+
     name = models.CharField(max_length=255)
     description = HTMLField()
+
+    special_tag = models.CharField(max_length=255, choices=SPECIAL_TAGS, default='New')
 
     minimum_order_quantity = models.PositiveIntegerField(default=1)
     
@@ -29,6 +38,9 @@ class Chair(models.Model):
     capacity = models.CharField(max_length=255, null=True, blank=True)
 
     key_features = HTMLField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
     
 
     def __str__(self):
