@@ -1,3 +1,5 @@
 db.sqlite3
 .env
-MisterChairProject/__pycache__/settings.cpython-312.pyc
+__pycache__/
+*.py[cod]
+*$py.class
